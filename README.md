@@ -63,3 +63,7 @@ For now, i will be focussing on writing my first few lines in Kotlin.
 Step 1: Run the app successfully :)
 Step 2: Fetch all PENDING invoices - created a Rest endpoint
 Step 3: Create an enpoint to pay an invoice - scope at this point is to just update status of whatever id is passed
+Step 4: Set up the billing service: take dal and invoice service as members + add method to pay invoices
+        New endpoint `rest/v1/payinvoices` to pay invoices. 
+          -> Calls the payinvoices functionality of billing service
+          -> Returns the updated invoice list
