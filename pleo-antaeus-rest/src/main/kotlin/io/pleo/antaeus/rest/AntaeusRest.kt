@@ -7,6 +7,7 @@ package io.pleo.antaeus.rest
 import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder.get
 import io.javalin.apibuilder.ApiBuilder.path
+import io.javalin.apibuilder.ApiBuilder.patch
 import io.pleo.antaeus.core.exceptions.EntityNotFoundException
 import io.pleo.antaeus.core.services.BillingService
 import io.pleo.antaeus.core.services.CustomerService
@@ -71,15 +72,12 @@ class AntaeusRest (
                                 it.json(invoiceService.fetch(it.pathParam("status").toString().toUpperCase()))
                             }
                         }
-                   }
 
-                   path("payinvoices") {
-                        // URL: /rest/v1/paynvoices
-                        // TO-DO: change to patch instead of get
-                        get {
-                            it.json(billingService.payInvoices("PENDING"))
+                        patch("update/:status") {
+                            it.json(billingService.payInvoices(it.pathParam("status").toString().toUpperCase()))
+                            it.status(200)
                         }
-                    }
+                   }
 
                    path("customers") {
                        // URL: /rest/v1/customers
