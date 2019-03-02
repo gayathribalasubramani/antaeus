@@ -61,4 +61,5 @@ I am new to Kotlin, so i am just trying to get the hang of what the code is and 
 For now, i will be focussing on writing my first few lines in Kotlin. 
 
 Step 1: Run the app successfully :)
-Step 2: Fetch all PENDING invoices 
+Step 2: Fetch all PENDING invoices - created a Rest endpoint
+Step 3: Create an enpoint to pay an invoice - scope at this point is to just update status of whatever id is passed

@@ -68,6 +68,13 @@ class AntaeusRest (
                                 it.json(invoiceService.fetch(it.pathParam("status").toString().toUpperCase()))
                             }
                         }
+
+                        path("pay") {
+                            // URL: /rest/v1/invoices/status/{:status}
+                            get(":id") {
+                                it.json(invoiceService.pay(it.pathParam("id").toInt()))
+                            }
+                        }
                    }
 
                    path("customers") {
