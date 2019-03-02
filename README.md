@@ -53,3 +53,12 @@ Happy hacking 😁!
 * [kotlin-logging](https://github.com/MicroUtils/kotlin-logging) - Simple logging framework for Kotlin
 * [JUnit 5](https://junit.org/junit5/) - Testing framework
 * [Mockk](https://mockk.io/) - Mocking library
+
+
+## Brinstorming
+I am new to Kotlin, so i am just trying to get the hang of what the code is and what the expecation is. My inital thoughts are to build an endpoint that can be called to pay off the invoices for customers. Some thoughts around this are to identify different timezones (hence difference in first of month to pay invoices) and different currencies.
+
+For now, i will be focussing on writing my first few lines in Kotlin. 
+
+Step 1: Run the app successfully :)
+Step 2: Fetch all PENDING invoices 
