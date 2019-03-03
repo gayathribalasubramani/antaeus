@@ -21,35 +21,42 @@ class BillingService(
     private val dal: AntaeusDal
 ) {
    fun payInvoices(status: String): MutableList<Invoice?>{
-       val dateTimeProvider = DateTimeProvider()
         if( status.equals("PENDING") ) {
             var pendingInvoices: List<Invoice> = invoiceService.fetch(InvoiceStatus.PENDING.toString())
-            var currentPaidInvoices: MutableList<Invoice?> = ArrayList<Invoice?>()
-
-            pendingInvoices.forEach {
-                try {
-                    val currency = customerService.fetch(it.customerId).currency;
-                    if( dateTimeProvider.isFirstDayOfMonth(currency) ) {
-                        val isCustomerCharged = paymentProvider.charge(it)
-                        if(isCustomerCharged) {
-                            currentPaidInvoices.add(dal.updateInvoiceStatus(it, InvoiceStatus.PAID))
-                        }
-                        else {
-                            // can be currency mismatch or customer not found or network error
-                            currentPaidInvoices.add(dal.updateInvoiceStatus(it, InvoiceStatus.FAILED))
-                        }
-                    }
-                } catch (e: CustomerNotFoundException) {
-                    logger.error(e) { "CustomerNotFoundException" }
-                } catch (e: CurrencyMismatchException) {
-                    logger.error(e) { "CurrencyMismatchException" }
-                } catch (e: NetworkException) {
-                    logger.error(e) { "NetworkException" }
-                }
-            }
-            return currentPaidInvoices
+            return charge(pendingInvoices)
+        }
+        else if( status.equals("FAILED") ) {
+            var failedInvoices: List<Invoice> = invoiceService.fetch(InvoiceStatus.FAILED.toString())
+            return charge(failedInvoices)
         }
         else
             return ArrayList<Invoice?>()
+   }
+
+   fun charge(invoices: List<Invoice>): MutableList<Invoice?>{
+        val dateTimeProvider = DateTimeProvider()
+        var currentPaidInvoices: MutableList<Invoice?> = ArrayList<Invoice?>()
+        invoices.forEach {
+            try {
+                val currency = customerService.fetch(it.customerId).currency;
+                if( dateTimeProvider.isFirstDayOfMonth(currency) ) {
+                    val isCustomerCharged = paymentProvider.charge(it)
+                    if(isCustomerCharged) {
+                        currentPaidInvoices.add(dal.updateInvoiceStatus(it, InvoiceStatus.PAID))
+                    }
+                    else {
+                        // can be currency mismatch or customer not found or network error
+                        currentPaidInvoices.add(dal.updateInvoiceStatus(it, InvoiceStatus.FAILED))
+                    }
+                }
+            } catch (e: CustomerNotFoundException) {
+                logger.error(e) { "CustomerNotFoundException" }
+            } catch (e: CurrencyMismatchException) {
+                logger.error(e) { "CurrencyMismatchException" }
+            } catch (e: NetworkException) {
+                logger.error(e) { "NetworkException" }
+            }
+        }
+        return currentPaidInvoices
    }
 }

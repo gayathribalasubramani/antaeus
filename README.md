@@ -70,10 +70,11 @@ Step 4: Set up the billing service: take dal and invoice service as members + ad
               * Call paymentprovider (third party) to charge a customer for an invoice. Returns
                  - true, if charged
                     -> update the invoices to `PAID`
-                 - false, if not charged because of insufficient balance?, , network error, customer not found, currency mismatch (possibility of doing currency   conversion?)
-                    -> update the invoices to `REJECTED`
-              * Returns the updated invoice list [added a new status to InvoiceStatus to track `REJECTED` invioces]
+                 - false, if not charged because of insufficient balance? (is this a possibility since i am assuming credit cards are used?), network error,       customer not found, currency mismatch (possibility of doing currency conversion?)
+                    -> update the invoices to `FAILED`
+              * Returns the updated invoice list [added a new status to InvoiceStatus to track `FAILED` invioces]
             -> else, return nothing
 Step 5: Consider timezones for contries for each of the currencies that is in Currency.kt 
         -> Calculate the current time in each of the timezones
         -> if any of the countries has the date as 1st of the month then return true, else false
+Step 6: Consider retry option for `FAILED` invoices (to-do : need to further narrow it down to network errors only)
