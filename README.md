@@ -64,6 +64,13 @@ Step 1: Run the app successfully :)
 Step 2: Fetch all PENDING invoices - created a Rest endpoint
 Step 3: Create an enpoint to pay an invoice - scope at this point is to just update status of whatever id is passed
 Step 4: Set up the billing service: take dal and invoice service as members + add method to pay invoices
-        New endpoint `rest/v1/payinvoices` to pay invoices. 
+        New endpoint `rest/v1/invoices/update/:status` to pay invoices (patch method to update existing invoices)
           -> Calls the payinvoices functionality of billing service
-          -> Returns the updated invoice list
+            -> If first day of month (considering current timezone only for now)
+              * Call paymentprovider (third party) to charge a customer for an invoice. Returns
+                 - true, if charged
+                    -> update the invoices to `PAID`
+                 - false, if not charged because of insufficient balance?, , network error, customer not found, currency mismatch (possibility of doing currency   conversion?)
+                    -> update the invoices to `REJECTED`
+              * Returns the updated invoice list [added a new status to InvoiceStatus to track `REJECTED` invioces]
+            -> else, return nothing
