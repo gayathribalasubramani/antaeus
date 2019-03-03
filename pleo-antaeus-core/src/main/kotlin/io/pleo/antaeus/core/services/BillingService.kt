@@ -20,13 +20,13 @@ class BillingService(
     private val customerService: CustomerService,
     private val dal: AntaeusDal
 ) {
-   fun payInvoices(status: String): MutableList<Invoice?>{
-        if( status.equals("PENDING") ) {
-            var pendingInvoices: List<Invoice> = invoiceService.fetch(InvoiceStatus.PENDING.toString())
+   fun payInvoices(status: InvoiceStatus): MutableList<Invoice?>{
+        if( status == InvoiceStatus.PENDING ) {
+            var pendingInvoices: List<Invoice> = invoiceService.fetch(InvoiceStatus.PENDING)
             return charge(pendingInvoices)
         }
-        else if( status.equals("FAILED") ) {
-            var failedInvoices: List<Invoice> = invoiceService.fetch(InvoiceStatus.FAILED.toString())
+        else if( status == InvoiceStatus.FAILED) {
+            var failedInvoices: List<Invoice> = invoiceService.fetch(InvoiceStatus.FAILED)
             return charge(failedInvoices)
         }
         else

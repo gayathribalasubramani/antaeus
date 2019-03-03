@@ -69,12 +69,12 @@ class AntaeusRest (
                         path("status") {
                             // URL: /rest/v1/invoices/status/{:status}
                             get(":status") {
-                                it.json(invoiceService.fetch(it.pathParam("status").toString().toUpperCase()))
+                                it.json(invoiceService.fetch(InvoiceStatus.valueOf(it.pathParam("status").toString().toUpperCase())))
                             }
                         }
 
                         patch("update/:status") {
-                            it.json(billingService.payInvoices(it.pathParam("status").toString().toUpperCase()))
+                            it.json(billingService.payInvoices(InvoiceStatus.valueOf(it.pathParam("status").toString().toUpperCase())))
                             it.status(200)
                         }
                    }
