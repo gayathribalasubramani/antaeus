@@ -78,3 +78,9 @@ Step 5: Consider timezones for contries for each of the currencies that is in Cu
         -> Calculate the current time in each of the timezones
         -> if any of the countries has the date as 1st of the month then return true, else false
 Step 6: Consider retry option for `FAILED` invoices (to-do : need to further narrow it down to network errors only)
+
+
+Imrpovements that can be done: 
+    ->  Options for suspending the application till the 1st of next month? Need to explore more on coroutines which allows this.
+        Things to consider: Is it right for a rest API to go into sleep for such long durations?
+        If so, consider US's 1st of month for sleep duration - since all the other countries would already be ahead of US.
