@@ -74,3 +74,6 @@ Step 4: Set up the billing service: take dal and invoice service as members + ad
                     -> update the invoices to `REJECTED`
               * Returns the updated invoice list [added a new status to InvoiceStatus to track `REJECTED` invioces]
             -> else, return nothing
+Step 5: Consider timezones for contries for each of the currencies that is in Currency.kt 
+        -> Calculate the current time in each of the timezones
+        -> if any of the countries has the date as 1st of the month then return true, else false

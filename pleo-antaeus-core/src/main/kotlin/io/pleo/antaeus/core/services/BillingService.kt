@@ -4,6 +4,7 @@ import io.pleo.antaeus.core.exceptions.CustomerNotFoundException
 import io.pleo.antaeus.core.exceptions.CurrencyMismatchException
 import io.pleo.antaeus.core.exceptions.NetworkException
 import io.pleo.antaeus.core.external.PaymentProvider
+import io.pleo.antaeus.core.services.CustomerService
 import io.pleo.antaeus.core.services.InvoiceService
 import io.pleo.antaeus.core.util.DateTimeProvider
 import io.pleo.antaeus.data.AntaeusDal
@@ -16,17 +17,19 @@ private val logger = KotlinLogging.logger {}
 class BillingService(
     private val paymentProvider: PaymentProvider,
     private val invoiceService: InvoiceService,
+    private val customerService: CustomerService,
     private val dal: AntaeusDal
 ) {
    fun payInvoices(status: String): MutableList<Invoice?>{
        val dateTimeProvider = DateTimeProvider()
-       if( dateTimeProvider.isFirstDayOfMonth() ) {
-            if( status.equals("PENDING") ) {
-                var pendingInvoices: List<Invoice> = invoiceService.fetch(InvoiceStatus.PENDING.toString())
-                var currentPaidInvoices: MutableList<Invoice?> = ArrayList<Invoice?>()
+        if( status.equals("PENDING") ) {
+            var pendingInvoices: List<Invoice> = invoiceService.fetch(InvoiceStatus.PENDING.toString())
+            var currentPaidInvoices: MutableList<Invoice?> = ArrayList<Invoice?>()
 
-                pendingInvoices.forEach {
-                    try {
+            pendingInvoices.forEach {
+                try {
+                    val currency = customerService.fetch(it.customerId).currency;
+                    if( dateTimeProvider.isFirstDayOfMonth(currency) ) {
                         val isCustomerCharged = paymentProvider.charge(it)
                         if(isCustomerCharged) {
                             currentPaidInvoices.add(dal.updateInvoiceStatus(it, InvoiceStatus.PAID))
@@ -35,21 +38,18 @@ class BillingService(
                             // can be currency mismatch or customer not found or network error
                             currentPaidInvoices.add(dal.updateInvoiceStatus(it, InvoiceStatus.FAILED))
                         }
-                    } catch (e: CustomerNotFoundException) {
-                        logger.error(e) { "CustomerNotFoundException" }
-                    } catch (e: CurrencyMismatchException) {
-                        logger.error(e) { "CurrencyMismatchException" }
-                    } catch (e: NetworkException) {
-                        logger.error(e) { "NetworkException" }
                     }
+                } catch (e: CustomerNotFoundException) {
+                    logger.error(e) { "CustomerNotFoundException" }
+                } catch (e: CurrencyMismatchException) {
+                    logger.error(e) { "CurrencyMismatchException" }
+                } catch (e: NetworkException) {
+                    logger.error(e) { "NetworkException" }
                 }
-                return currentPaidInvoices
             }
-            else
-                return ArrayList<Invoice?>()
-       }
-       else {
-           return ArrayList<Invoice?>()
-       }
+            return currentPaidInvoices
+        }
+        else
+            return ArrayList<Invoice?>()
    }
 }
